@@ -1,0 +1,79 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #a7a6a6;
+    color: #333333;
+}
+
+header {
+    background-color: #333;
+    color: #ffffff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header div {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+button i {
+    margin-right: 8px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Lista de reservas */
+.reservas {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.reservas h2 {
+    margin-bottom: 20px;
+}
+
+#listaReservas {
+    list-style-type: none;
+    padding: 0;
+}
+
+#listaReservas li {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+#listaReservas li strong {
+    font-size: 18px;
+    color: #333;
+}
+
+#listaReservas li p {
+    margin: 5px 0;
+    color: #555;
+}

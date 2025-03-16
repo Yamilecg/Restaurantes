@@ -1,0 +1,154 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #a7a6a6;
+    color: #333333;
+}
+
+header {
+    background-color: #333;
+    color: #ffffff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#authBtn {
+    color: #fff;
+    text-decoration: none;
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#authBtn i {
+    margin-right: 10px;
+}
+
+/* Lista de restaurantes */
+.restaurantes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.restaurante {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    width: 300px;
+    text-align: center;
+    padding: 20px;
+}
+
+.restaurante img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.reservar-btn {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.reservar-btn.hidden {
+    display: none; /* Oculta el botón por defecto */
+}
+
+.reservar-btn:hover {
+    background-color: #555;
+}
+
+
+/* Modales */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    font-size: 30px;
+}
+
+.close:hover {
+    color: #555;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form label {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+form input {
+    width: 80%;
+    padding: 6px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+}
+
+form button {
+    background: #333;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background: #555;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* Estilos para el enlace de Mis Reservas */
+.reservas-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.reservas-link i {
+    margin-right: 8px;
+}
+
+.reservas-link.hidden {
+    display: none; /* Oculta el enlace por defecto */
+}
