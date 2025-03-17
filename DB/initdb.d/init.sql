@@ -1,16 +1,18 @@
 CREATE TABLE Usuarios (
-    Id INT PRIMARY KEY AUTO_INCREMENT,  
-    Nombre VARCHAR(100) NOT NULL,      
-    Contraseña VARCHAR(100) NOT NULL,  
-    Numero VARCHAR(15)                  
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    contacto VARCHAR(15)
 );
 
-
 CREATE TABLE Reservas (
-    Id INT PRIMARY KEY AUTO_INCREMENT,  
-    Fecha DATE NOT NULL,                
-    Hora TIME NOT NULL,                
-    numPersonas INT NOT NULL,          
-    idCliente INT,                    
-    FOREIGN KEY (idCliente) REFERENCES Usuarios(Id)  
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    numPersonas INT NOT NULL,
+    nombreCliente VARCHAR(100) NOT NULL,
+    contacto VARCHAR(15) NOT NULL,
+    idCliente INT,
+    FOREIGN KEY (idCliente) REFERENCES Usuarios(id)
 );

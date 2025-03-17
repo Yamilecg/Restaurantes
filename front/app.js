@@ -11,20 +11,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const registroForm = document.getElementById('registroForm');
 
     // Verificar si el usuario está autenticado
-    const usuarioAutenticado = localStorage.getItem('usuarioAutenticado');
+    const token = localStorage.getItem('token');
 
     // Mostrar/ocultar elementos según el estado de autenticación
-    if (usuarioAutenticado) {
+    if (token) {
         reservarBtns.forEach(btn => btn.classList.remove('hidden'));
-        reservasLink.classList.remove('hidden'); 
+        reservasLink.classList.remove('hidden');
         authBtn.textContent = 'Cerrar Sesión';
     }
 
     // Abrir modal de autenticación
     authBtn.addEventListener('click', () => {
-        if (usuarioAutenticado) {
+        if (token) {
             // Cerrar sesión
-            localStorage.removeItem('usuarioAutenticado');
+            localStorage.removeItem('token');
+            localStorage.removeItem('nombreUsuario');
+            localStorage.removeItem('contactoUsuario');
             window.location.reload(); // Recargar la página
         } else {
             authModal.style.display = 'flex';
@@ -53,18 +55,58 @@ document.addEventListener('DOMContentLoaded', () => {
         registroForm.classList.remove('hidden');
     });
 
-    // Simular inicio de sesión
-    loginForm.addEventListener('submit', (e) => {
+    // Manejar inicio de sesión
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        localStorage.setItem('usuarioAutenticado', 'true');
-        window.location.reload(); // Recargar la página
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('token', data.token); // Guardar el token
+                localStorage.setItem('nombreUsuario', data.nombre); // Guardar el nombre del usuario
+                localStorage.setItem('contactoUsuario', data.contacto); // Guardar el contacto del usuario
+                window.location.reload(); // Recargar la página
+            } else {
+                alert('Error al iniciar sesión');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
 
-    // Simular registro
-    registroForm.addEventListener('submit', (e) => {
+    // Manejar registro
+    registroForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        localStorage.setItem('usuarioAutenticado', 'true');
-        window.location.reload(); // Recargar la página
+
+        const nombre = document.getElementById('nombre').value;
+        const email = document.getElementById('emailRegistro').value;
+        const password = document.getElementById('passwordRegistro').value;
+
+        try {
+            const response = await fetch('http://localhost:3000/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, email, password })
+            });
+
+            if (response.ok) {
+                alert('Registro exitoso. Inicia sesión.');
+                registroForm.classList.add('hidden');
+            } else {
+                alert('Error al registrarse');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
 
     // Abrir modal de reservas
@@ -75,14 +117,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Manejar el envío del formulario de reservas
-    reservaForm.addEventListener('submit', (e) => {
+    reservaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const fecha = document.getElementById('fecha').value;
-        const hora = document.getElementById('hora').value;
-        const numPersonas = document.getElementById('numPersonas').value;
 
-        alert(`Reserva confirmada para ${fecha} a las ${hora} para ${numPersonas} personas.`);
-        reservaModal.style.display = 'none';
-        reservaForm.reset();
+        const reserva = {
+            fecha: document.getElementById('fecha').value,
+            hora: document.getElementById('hora').value,
+            numPersonas: document.getElementById('numPersonas').value,
+            nombreCliente: localStorage.getItem('nombreUsuario'), // Obtener el nombre del usuario autenticado
+            contacto: localStorage.getItem('contactoUsuario') // Obtener el contacto del usuario autenticado
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/reservas', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Enviar el token de autenticación
+                },
+                body: JSON.stringify(reserva)
+            });
+
+            if (response.ok) {
+                alert('Reserva confirmada exitosamente');
+                reservaModal.style.display = 'none';
+                reservaForm.reset();
+            } else {
+                alert('Error al confirmar la reserva');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
 });

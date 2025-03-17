@@ -24,43 +24,65 @@
         <section class="reservas">
             <h2>Reservas Activas</h2>
             <ul id="listaReservas">
-                <!-- Las reservas se cargarán dinámicamente aquí -->
+                
             </ul>
         </section>
     </main>
 
     <script>
-        // Datos de ejemplo de reservas (simulando una base de datos)
-        const reservas = [
-            { restaurante: "Restaurante Mexicano", fecha: "2023-10-15", hora: "20:00", personas: 4 },
-            { restaurante: "Restaurante Italiano", fecha: "2023-10-16", hora: "19:30", personas: 2 },
-        ];
-
-        // Función para cargar las reservas en la página
-        function cargarReservas() {
+        document.addEventListener('DOMContentLoaded', async () => {
             const listaReservas = document.getElementById('listaReservas');
-            listaReservas.innerHTML = reservas.map(reserva => `
-                <li>
-                    <strong>${reserva.restaurante}</strong><br>
-                    Fecha: ${reserva.fecha}<br>
-                    Hora: ${reserva.hora}<br>
-                    Personas: ${reserva.personas}
-                </li>
-            `).join('');
-        }
+            const logoutBtn = document.getElementById('logoutBtn');
+            const volverInicioBtn = document.getElementById('volverInicioBtn');
 
-        // Cargar las reservas al abrir la página
-        cargarReservas();
+            // Verificar si el usuario esta logeado
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Debes iniciar sesión para ver tus reservas.');
+                window.location.href = 'index.html'; // Redirigir al inicio si no está autenticado
+                return;
+            }
 
-        // Manejar el cierre de sesión
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('usuarioAutenticado'); // Eliminar estado de autenticación
-            window.location.href = 'index.html'; // Redirigir a la página principal
-        });
+            //para cargar las reservas
+            async function cargarReservas() {
+                try {
+                    const response = await fetch('http://localhost:3000/reservas', {
+                        headers: {
+                            'Authorization': `Bearer ${token}` // Enviar el token de autenticación
+                        }
+                    });
 
-        // Manejar el botón "Volver al Inicio"
-        document.getElementById('volverInicioBtn').addEventListener('click', () => {
-            window.location.href = 'index.html'; // Redirigir a la página principal
+                    if (response.ok) {
+                        const reservas = await response.json();
+                        listaReservas.innerHTML = reservas.map(reserva => `
+                            <li>
+                                <strong>${reserva.nombreCliente}</strong><br>
+                                Fecha: ${reserva.fecha}<br>
+                                Hora: ${reserva.hora}<br>
+                                Personas: ${reserva.numPersonas}
+                            </li>
+                        `).join('');
+                    } else {
+                        alert('Error al cargar las reservas');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            cargarReservas();
+
+      
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('token'); 
+                localStorage.removeItem('nombreUsuario');
+                localStorage.removeItem('contactoUsuario');
+                window.location.href = 'index.html'; 
+            });
+
+            volverInicioBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
         });
     </script>
 </body>

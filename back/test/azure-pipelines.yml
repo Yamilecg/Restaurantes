@@ -1,0 +1,87 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+  testResultsDir: '$(System.DefaultWorkingDirectory)/test-results'
+  registry: 'your-docker-registry'  # Reemplaza con tu registro de Docker
+  container: 'back'                # Nombre del contenedor
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build and test the image
+      inputs:
+        repository: '$(registry)/$(container)'
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        tags: '$(tag)'
+
+    # Ejecutar pruebas dentro del contenedor
+    - script: |
+        docker run -v $(testResultsDir):/usr/src/app/test_reports -v ${PWD}/coverage:/usr/src/app/coverage $(registry)/$(container):$(tag) npm test -- --coverage
+      displayName: Run container with test
+
+    # Publicar resultados de las pruebas en Azure DevOps
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '$(testResultsDir)/jest-junit.xml'
+        testRunTitle: 'Jest Unit Tests'
+      displayName: 'Publish test results'
+
+    # Publicar reporte de cobertura en Azure DevOps
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: 'Cobertura'  # Jest genera cobertura compatible con Cobertura
+        summaryFileLocation: 'coverage/cobertura-coverage.xml'  # Ruta al archivo de cobertura
+        reportDirectory: 'coverage'  # Directorio con los reportes
+      displayName: 'Publish code coverage report'
+
+    # Subir la imagen al registro de Docker
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'your-docker-registry'  # Reemplaza con tu registro de Docker
+        repository: '$(registry)/$(container)'
+        command: 'push'
+        tags: '$(tag)'
+      displayName: Push the image
+
+- stage: DeployDev
+  displayName: Deploy to Dev
+  jobs:
+    - deployment: Deploy
+      environment: 'Development'
+      displayName: 'Deploy Docker Image to Dev App Service'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureRmWebAppDeployment@5
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  azureSubscription: 'Azure for Students(5c01c3d6-c18c-445d-9d8b-bcf7e310a4b6)'
+                  appType: 'webAppContainer'
+                  WebAppName: 'your-app-service-name'  # Reemplaza con el nombre de tu App Service
+                  DockerNamespace: '$(registry)'
+                  DockerRepository: '$(container)'
+                  DockerImageTag: '$(Build.BuildId)'
+                  AppSettings: |
+                    -DB_HOST "your-database-host" 
+                    -DB_USER "your-database-user" 
+                    -DB_PASSWORD "your-database-password" 
+                    -DB_NAME "your-database-name"
