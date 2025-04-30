@@ -11,11 +11,8 @@
     <header>
         <h1>Mis Reservas</h1>
         <div>
-            <button id="volverInicioBtn">
+            <button id="volverInicioBtn" onclick="window.location.href='index.html'">
                 <i class="fas fa-home"></i> Volver al Inicio
-            </button>
-            <button id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
             </button>
         </div>
     </header>
@@ -24,64 +21,20 @@
         <section class="reservas">
             <h2>Reservas Activas</h2>
             <ul id="listaReservas">
-                
+                <!-- Aquí se cargarán las reservas con JS -->
             </ul>
         </section>
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const listaReservas = document.getElementById('listaReservas');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const volverInicioBtn = document.getElementById('volverInicioBtn');
-
-            // Verificar si el usuario esta logeado
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Debes iniciar sesión para ver tus reservas.');
-                window.location.href = 'index.html'; // Redirigir al inicio si no está autenticado
-                return;
-            }
-
-            //para cargar las reservas
-            async function cargarReservas() {
-                try {
-                    const response = await fetch('http://localhost:3000/reservas', {
-                        headers: {
-                            'Authorization': `Bearer ${token}` // Enviar el token de autenticación
-                        }
-                    });
-
-                    if (response.ok) {
-                        const reservas = await response.json();
-                        listaReservas.innerHTML = reservas.map(reserva => `
-                            <li>
-                                <strong>${reserva.nombreCliente}</strong><br>
-                                Fecha: ${reserva.fecha}<br>
-                                Hora: ${reserva.hora}<br>
-                                Personas: ${reserva.numPersonas}
-                            </li>
-                        `).join('');
-                    } else {
-                        alert('Error al cargar las reservas');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
-
-            cargarReservas();
-
-      
-            logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('token'); 
-                localStorage.removeItem('nombreUsuario');
-                localStorage.removeItem('contactoUsuario');
-                window.location.href = 'index.html'; 
-            });
-
-            volverInicioBtn.addEventListener('click', () => {
-                window.location.href = 'index.html';
+    fetch('http://localhost:3000/reservas')
+        .then(res => res.json())
+        .then(data => {
+            const lista = document.getElementById('listaReservas');
+            data.forEach(r => {
+                const li = document.createElement('li');
+                li.textContent = `${r.restaurante} - ${r.fecha} ${r.hora} - ${r.numPersonas} personas`;
+                lista.appendChild(li);
             });
         });
     </script>
