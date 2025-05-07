@@ -1,11 +1,12 @@
-# Use the official Nginx image as the base image
+# Usa Nginx como servidor web
 FROM nginx:alpine
 
-# Copy the HTML files to the Nginx default root directory
+# Copia todo tu frontend al directorio público de Nginx
 COPY . /usr/share/nginx/html
 
-# Expose port 80
+# Expón el puerto 80
 EXPOSE 80
 
-# Start Nginx
+# Inicia Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
