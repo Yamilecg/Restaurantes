@@ -2,8 +2,6 @@ require('dotenv').config(); // Para leer variables del archivo .env
 const mongoose = require('mongoose');
 const Reserva = require('./models/reserva');
 
-DB_URL = "mongodb+srv://loreru:restaurantes123.@restaurates-db.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000"
-
 async function run() {
   try {
     // Usa la cadena de conexión proporcionada por Azure en tu archivo .env
