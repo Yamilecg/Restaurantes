@@ -1,0 +1,17 @@
+# Archivos temporales de sistema
+*.log
+*.tmp
+*.swp
+
+# Carpetas de compilación
+bin/
+obj/
+
+# Archivos de OneDrive (si hay alguno que cause conflicto)
+~$*
+
+# Configuración del IDE (opcional, según el que uses)
+.vscode/
+.idea/
+
+node_modules/
