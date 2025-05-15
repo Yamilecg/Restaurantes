@@ -1,66 +1,43 @@
-require('dotenv').config(); // Para leer variables del archivo .env
+require('dotenv').config();
+const express = require('express');
 const mongoose = require('mongoose');
 const Reserva = require('./models/reserva');
 
-async function run() {
+const app = express();
+app.use(express.json());
+
+const PORT = process.env.PORT || 3000;
+
+// Conexión a MongoDB
+mongoose.connect(process.env.DB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true, // Recomendado por CosmosDB
+  retryWrites: false,
+  authMechanism: 'SCRAM-SHA-256',
+}).then(() => {
+  console.log('✅ Conectado a MongoDB Azure Cosmos');
+}).catch(err => {
+  console.error('❌ Error al conectar a MongoDB:', err);
+});
+
+// Ruta de prueba
+app.get('/', (req, res) => {
+  res.send('Servidor funcionando ✔️');
+});
+
+// Ruta para crear reserva (ejemplo)
+app.post('/reservas', async (req, res) => {
   try {
-    // Usa la cadena de conexión proporcionada por Azure en tu archivo .env
-    const connectionString = process.env.DB_URL;
-
-    await mongoose.connect(connectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
-    console.log('✅ Conectado a MongoDB (Azure)');
-
-    // Crear una nueva reserva
-    const nuevaReserva = new Reserva({
-      nombre: 'Pedro Gómez',
-      fecha: new Date('2025-05-15T20:00:00'),
-      dia: 'Jueves',
-      numeroDePersonas: 4,
-    });
-
+    const nuevaReserva = new Reserva(req.body);
     await nuevaReserva.save();
-    console.log('✅ Reserva guardada:', nuevaReserva);
-
-    await mongoose.disconnect();
+    res.status(201).json(nuevaReserva);
   } catch (err) {
-    console.error('❌ Error en la conexión o guardado:', err);
+    console.error(err);
+    res.status(500).json({ error: 'Error al guardar la reserva' });
   }
-}
+});
 
-run();
-
-
-
-/* PRUEBA CON LOCAL
-
-const mongoose = require('mongoose');
-const Reserva = require('./models/reserva');
-
-async function run() {
-  await mongoose.connect('mongodb://localhost:27017/test_db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  console.log('✅ Conectado a MongoDB');
-
-  // Crear una nueva reserva
-  const nuevaReserva = new Reserva({
-    nombre: 'Pedro Gómez',
-    fecha: new Date('2025-05-15T20:00:00'),
-    dia: 'Jueves',
-    numeroDePersonas: 4
-  });
-
-  await nuevaReserva.save();
-  console.log('✅ Reserva guardada:', nuevaReserva);
-
-  await mongoose.disconnect();
-}
-
-run().catch(err => console.error('❌ Error:', err));
- */
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+});

@@ -16,5 +16,8 @@ COPY . .
 # Expone el puerto que usa tu backend (asegúrate que sea 3000 en tu app)
 EXPOSE 3000
 
+# Usa la variable de entorno PORT (requerida por Azure)
+ENV PORT=3000
+
 # Comando para iniciar tu backend
 CMD ["node", "app.js"]
